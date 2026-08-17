@@ -1,0 +1,16 @@
+:root { color: #162235; background: #f5f7fb; font-family: system-ui, -apple-system, "Noto Sans TC", sans-serif; }
+body { margin: 0; }
+main { max-width: 980px; margin: 0 auto; padding: 3rem 1.25rem; }
+header { border-left: .4rem solid #00a58a; padding-left: 1rem; margin-bottom: 2rem; }
+header p { color: #557; margin: .25rem 0; }
+h1 { margin: .2rem 0; font-size: clamp(2rem, 6vw, 3.5rem); }
+section { background: white; border-radius: 1rem; padding: 1.25rem; margin: 1rem 0; box-shadow: 0 6px 20px #182b4210; }
+label { font-weight: 700; margin-right: .75rem; }
+select { padding: .55rem .7rem; border: 1px solid #aab5c4; border-radius: .5rem; font: inherit; }
+table { border-collapse: collapse; width: 100%; margin-top: .75rem; }
+th, td { padding: .75rem; text-align: left; border-bottom: 1px solid #e3e7ee; }
+th:last-child, td:last-child { text-align: right; font-variant-numeric: tabular-nums; }
+tbody tr:first-child { background: #e5f7f1; font-weight: 700; }
+footer { max-width: 980px; margin: 0 auto; padding: 1rem 1.25rem 2rem; color: #556375; font-size: .9rem; }
+.status { min-height: 50vh; display: grid; place-content: center; text-align: center; }
+@media (max-width: 560px) { main { padding: 2rem 1rem; } th, td { padding: .6rem .35rem; } }
