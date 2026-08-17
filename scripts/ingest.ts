@@ -2,7 +2,7 @@ import type { RidershipRecord } from '../src/data/query';
 import * as XLSX from 'xlsx';
 
 export type SourceFile = {
-  period: `${number}-${string}`;
+  period: string;
   url: string;
   fileName: string;
 };

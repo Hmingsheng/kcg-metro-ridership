@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react';
 import { Dashboard } from './components/Dashboard';
 import { StationExplorer } from './components/StationExplorer';
 import { StationCompare } from './components/StationCompare';
+import { MonthlyDashboard } from './components/MonthlyDashboard';
+import { MonthlyStationExplorer } from './components/MonthlyStationExplorer';
 import type { RidershipRecord } from './data/query';
 
 export type Metadata = {
@@ -13,17 +15,18 @@ export type Metadata = {
   generatedAt: string;
 };
 
-export type SiteData = { records: RidershipRecord[]; metadata: Metadata };
+export type SiteData = { records: RidershipRecord[]; metadata: Metadata; monthlyRecords?: RidershipRecord[] };
 
 async function loadStaticData(): Promise<SiteData> {
-  const [recordsResponse, metadataResponse] = await Promise.all([
+  const [recordsResponse, metadataResponse, monthlyResponse] = await Promise.all([
     fetch(`${import.meta.env.BASE_URL}data/ridership.json`),
     fetch(`${import.meta.env.BASE_URL}data/metadata.json`),
+    fetch(`${import.meta.env.BASE_URL}data/monthly.json`),
   ]);
-  if (!recordsResponse.ok || !metadataResponse.ok) {
+  if (!recordsResponse.ok || !metadataResponse.ok || !monthlyResponse.ok) {
     throw new Error('Static data request failed');
   }
-  return { records: await recordsResponse.json(), metadata: await metadataResponse.json() };
+  return { records: await recordsResponse.json(), metadata: await metadataResponse.json(), monthlyRecords: await monthlyResponse.json() };
 }
 
 export function App({ loadData = loadStaticData }: { loadData?: () => Promise<SiteData> }) {
@@ -43,7 +46,14 @@ export function App({ loadData = loadStaticData }: { loadData?: () => Promise<Si
 
   return <>
     <Dashboard records={data.records} years={data.metadata.years} />
-    <main><StationExplorer records={data.records} /><StationCompare records={data.records} years={data.metadata.years} /></main>
+    <main>
+      {data.monthlyRecords?.length ? <>
+        <MonthlyDashboard records={data.monthlyRecords} periods={[...new Set(data.monthlyRecords.map((record) => record.period))].sort()} />
+        <MonthlyStationExplorer records={data.monthlyRecords} />
+      </> : null}
+      <StationExplorer records={data.records} />
+      <StationCompare records={data.records} years={data.metadata.years} />
+    </main>
     <footer>資料來源：<a href={data.metadata.sourceUrl} target="_blank" rel="noreferrer">資料來源</a>・最後產生：{new Date(data.metadata.generatedAt).toLocaleDateString('zh-TW')}</footer>
   </>;
 }
