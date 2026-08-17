@@ -24,7 +24,6 @@ jobs:
           node-version: 24
           cache: npm
       - run: npm ci
-      - run: npm run ingest
       - run: npm run validate
       - run: npm test -- --pool=threads --maxWorkers=1
       - run: npm run build

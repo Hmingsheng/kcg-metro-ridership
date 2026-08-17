@@ -16,4 +16,4 @@ npm run dev
 
 ## 發布
 
-將專案推送到 GitHub 預設分支 `main`，在儲存庫 Settings → Pages 選擇 GitHub Actions。工作流程會自動下載資料、驗證、測試、建置並發布。
+將專案推送到 GitHub 預設分支 `main`，在儲存庫 Settings → Pages 選擇 GitHub Actions。工作流程會驗證已版本化的資料、測試、建置並發布；更新資料時，先在本機執行 `npm run ingest`，檢查後再推送。
