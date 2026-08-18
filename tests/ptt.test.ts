@@ -42,6 +42,14 @@ describe('PTT daily-ridership parser', () => {
     })).toEqual([]);
   });
 
+  it('parses 2018 ranking rows that identify stations by name instead of code', () => {
+    expect(parsePttDailyRidershipPost({
+      url: 'https://www.ptt.cc/bbs/MRT/M.example.html',
+      title: '高雄捷運107年10月各站旅運量',
+      body: '  1   左營站        36,242  35,397  36,061',
+    })[0]).toMatchObject({ stationId: 'R16', stationName: '左營', passengers: 36242, period: '2018-10' });
+  });
+
   it('rejects summary lines that contain a station-like code but no station name', () => {
     expect(parsePttDailyRidershipPost({
       url: 'https://www.ptt.cc/bbs/MRT/M.example.html',
