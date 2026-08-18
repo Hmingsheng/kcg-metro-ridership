@@ -2,7 +2,7 @@ import { mkdir, writeFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
 import { parseAnnualRecords } from './annual';
 import { extractBoardingRows, readWorkbookRows, validateRecords } from './ingest';
-import { extractMonthlySources } from './monthly';
+import { extractMonthlySources, officialHistoricalMonthlySources } from './monthly';
 
 const annualSourceUrl = 'https://openapi.kcg.gov.tw/Api/Service/Get/1e595d78-2f73-4edd-9c17-7cce8c2d7ce9';
 const monthlyIndexUrl = 'https://kcgdg.kcg.gov.tw/KcgStatWebNew/Page/kcg01_1.aspx?Mid=LoHqlcF90Xs=&p=nWfS7drIbrE=&y=aAAfbT6+ZzM=&m=nWfS7drIbrE=';
@@ -15,7 +15,8 @@ async function fetchMonthlyRecords() {
   if (!indexResponse.ok) {
     throw new Error(`Monthly index request failed with HTTP ${indexResponse.status}`);
   }
-  const sources = extractMonthlySources(await indexResponse.text());
+  const sources = [...officialHistoricalMonthlySources(), ...extractMonthlySources(await indexResponse.text())]
+    .sort((left, right) => left.period.localeCompare(right.period));
   const batches = await Promise.all(sources.map(async (source) => {
     const response = await fetch(source.url);
     if (!response.ok) {
