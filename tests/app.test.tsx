@@ -3,16 +3,16 @@ import { describe, expect, it } from 'vitest';
 import { App, type SiteData } from '../src/App';
 
 const siteData: SiteData = {
-  records: [{ stationId: 'R3', stationName: '小港', period: '2024', passengers: 120, sourceUrl: 'https://example.test', sourceFile: 'source' }],
-  metadata: { sourceUrl: 'https://example.test', sourceName: '高雄市政府', metric: '入站人次', years: ['2024'], recordCount: 1, generatedAt: '2026-08-17T00:00:00.000Z' },
+  monthlyRecords: [{ stationId: 'R3', stationName: '小港', period: '2024-12', passengers: 120, sourceUrl: 'https://www.ptt.cc/bbs/MRT/M.example.html', sourceFile: 'source' }],
+  metadata: { sourceUrl: 'https://www.ptt.cc/bbs/MRT/index.html', sourceName: 'PTT MRT 板', metric: '平均每日入站人次', periods: ['2024-12'], recordCount: 1, generatedAt: '2026-08-17T00:00:00.000Z' },
 };
 
 describe('App', () => {
-  it('loads static data and exposes the official source link', async () => {
+  it('loads PTT daily data and exposes the source disclosure', async () => {
     render(<App loadData={async () => siteData} />);
 
-    expect(await screen.findByRole('heading', { name: '高雄捷運站運量' })).toBeVisible();
-    expect(screen.getByRole('link', { name: '資料來源' })).toHaveAttribute('href', 'https://example.test');
+    expect(await screen.findByRole('heading', { name: '月度日均入站排行' })).toBeVisible();
+    expect(screen.getByRole('link', { name: 'PTT MRT 板' })).toHaveAttribute('href', 'https://www.ptt.cc/bbs/MRT/index.html');
   });
 
   it('shows a clear reload state when static data cannot be read', async () => {

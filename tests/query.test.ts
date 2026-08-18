@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { aggregateYear, rankStations, type RidershipRecord } from '../src/data/query';
+import { rankStations, type RidershipRecord } from '../src/data/query';
 
 const records: RidershipRecord[] = [
   { stationId: 'R10', period: '2026-01', passengers: 120, sourceUrl: 'https://example.test/a.xlsx', sourceFile: 'a.xlsx' },
@@ -16,7 +16,4 @@ describe('ridership queries', () => {
       ]);
   });
 
-  it('sums only available records in a yearly aggregate', () => {
-    expect(aggregateYear(records, 'R10', 2026)).toEqual({ passengers: 220, monthsPresent: 2 });
-  });
 });

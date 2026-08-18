@@ -3,14 +3,16 @@ import { describe, expect, it } from 'vitest';
 import { MonthlyStationExplorer } from '../src/components/MonthlyStationExplorer';
 
 describe('MonthlyStationExplorer', () => {
-  it('shows a selected station’s monthly inbound trend', () => {
+  it('shows a selected station’s monthly daily-average trend with source links', () => {
     render(<MonthlyStationExplorer records={[
       { stationId: 'R3', stationName: '小港', period: '2026-01', passengers: 120, sourceUrl: 'x', sourceFile: 'x' },
       { stationId: 'R3', stationName: '小港', period: '2026-02', passengers: 100, sourceUrl: 'x', sourceFile: 'x' },
     ]} />);
     fireEvent.change(screen.getByLabelText('選擇月度車站'), { target: { value: 'R3' } });
 
-    expect(screen.getByRole('heading', { name: '小港月度入站趨勢' })).toBeVisible();
+    expect(screen.getByRole('heading', { name: '小港月度日均入站趨勢' })).toBeVisible();
     expect(screen.getByRole('cell', { name: '2026 年 2 月' })).toBeVisible();
+    expect(screen.getByRole('columnheader', { name: '平均每日入站人次' })).toBeVisible();
+    expect(screen.getAllByRole('link', { name: '查看原文' })[0]).toHaveAttribute('href', 'x');
   });
 });

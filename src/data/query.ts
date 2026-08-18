@@ -21,13 +21,3 @@ export function rankStations(records: RidershipRecord[], options: RankOptions) {
     .sort((left, right) => right.passengers - left.passengers || left.stationId.localeCompare(right.stationId));
 }
 
-export function aggregateYear(records: RidershipRecord[], stationId: string, year: number) {
-  const matchingRecords = records.filter(
-    (record) => record.stationId === stationId && record.period.startsWith(`${year}-`),
-  );
-
-  return {
-    passengers: matchingRecords.reduce((total, record) => total + record.passengers, 0),
-    monthsPresent: matchingRecords.length,
-  };
-}
