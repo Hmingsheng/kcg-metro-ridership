@@ -17,6 +17,7 @@ export function extractPttPostUrls(indexHtml: string): string[] {
 }
 
 const searchPages = 65;
+const additionalPostUrls = ['https://www.ptt.cc/bbs/MRT/M.1513354543.A.C9B.html'];
 const searchUrl = (page: number, query = '高雄捷運') => `https://www.ptt.cc/bbs/MRT/search?page=${page}&q=${encodeURIComponent(query)}`;
 
 function stripHtml(html: string) {
@@ -41,7 +42,7 @@ export async function fetchPttDailyRidershipPosts(): Promise<PttPost[]> {
     if (!response.ok) throw new Error(`PTT search request failed: HTTP ${response.status}`);
     indexPages.push(await response.text());
   }
-  const urls = [...new Set(indexPages.flatMap(extractPttPostUrls))];
+  const urls = [...new Set([...indexPages.flatMap(extractPttPostUrls), ...additionalPostUrls])];
   const posts: PttPost[] = [];
   for (const urlsBatch of Array.from({ length: Math.ceil(urls.length / 8) }, (_, index) => urls.slice(index * 8, index * 8 + 8))) {
     const fetched = await Promise.all(urlsBatch.map(async (url) => {

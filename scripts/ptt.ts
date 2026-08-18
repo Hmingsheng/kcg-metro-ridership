@@ -26,10 +26,10 @@ const historicStationCodes: Record<string, [string, string]> = {
 };
 
 export function parsePttDailyRidershipPost(post: PttPost): RidershipRecord[] {
-  const title = post.title.match(/高雄捷運(\d+)年(\d+)月各站旅運量/);
+  const title = post.title.match(/(?:高雄捷運(\d+)年(\d+)月|(\d+)年(\d+)月高雄捷運)各站旅運量/);
   if (!title) return [];
 
-  const period = `${Number(title[1]) + 1911}-${title[2].padStart(2, '0')}`;
+  const period = `${Number(title[1] ?? title[3]) + 1911}-${(title[2] ?? title[4]).padStart(2, '0')}`;
   return post.body.split(/\r?\n/).flatMap((line) => {
     const row = line.match(/\b([A-Z]+\d+[A-Z]?(?:\/[A-Z]+\d+[A-Z]?)?)\s+(.+?)\s+([\d,]+)/);
     if (row && /[^\d,]/.test(row[2])) return [{
