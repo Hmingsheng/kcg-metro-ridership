@@ -17,7 +17,7 @@ export function parsePttDailyRidershipPost(post: PttPost): RidershipRecord[] {
   const period = `${Number(title[1]) + 1911}-${title[2].padStart(2, '0')}`;
   return post.body.split(/\r?\n/).flatMap((line) => {
     const row = line.match(/\b([A-Z]+\d+[A-Z]?(?:\/[A-Z]+\d+[A-Z]?)?)\s+(.+?)\s+([\d,]+)/);
-    if (!row) return [];
+    if (!row || !/[^\d,]/.test(row[2])) return [];
     return [{
       stationId: row[1],
       stationName: stationNameAliases[row[2]] ?? row[2],

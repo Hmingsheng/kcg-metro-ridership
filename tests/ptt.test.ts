@@ -42,6 +42,14 @@ describe('PTT daily-ridership parser', () => {
     })).toEqual([]);
   });
 
+  it('rejects summary lines that contain a station-like code but no station name', () => {
+    expect(parsePttDailyRidershipPost({
+      url: 'https://www.ptt.cc/bbs/MRT/M.example.html',
+      title: '高雄捷運106年8月各站旅運量',
+      body: 'C12 10,578 10,634',
+    })).toEqual([]);
+  });
+
   it('keeps records only from parseable daily-ridership posts', () => {
     const records = buildPttRecords([
       {
