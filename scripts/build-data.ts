@@ -5,10 +5,11 @@ import { buildPttRecords, fetchPttDailyRidershipPosts } from './ptt-posts';
 
 const outputDirectory = resolve('public/data');
 const sourceUrl = 'https://www.ptt.cc/bbs/MRT/index.html';
+const earliestPeriod = '2010-01';
 
 async function main() {
   const posts = await fetchPttDailyRidershipPosts();
-  const records = buildPttRecords(posts);
+  const records = buildPttRecords(posts).filter((record) => record.period >= earliestPeriod);
   validateRecords(records);
   if (records.length === 0) throw new Error('No PTT daily ridership records were parsed');
   const periods = [...new Set(records.map((record) => record.period))].sort();
