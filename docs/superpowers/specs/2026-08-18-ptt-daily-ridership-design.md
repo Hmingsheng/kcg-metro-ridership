@@ -1,38 +1,38 @@
-# PTT daily station-ridership data
+# PTT 各站日均入站運量資料
 
-## Goal
+## 目標
 
-Replace every city-government ridership data source and view with verifiable PTT MRT-board posts containing Kaohsiung Metro station-level daily inbound averages.
+將所有市府旅運量資料來源與相關頁面，全面替換為可驗證的 PTT MRT 板文章；資料內容為高雄捷運各站的每日平均入站人次。
 
-## Scope
+## 範圍
 
-- Include only posts whose title and body identify a monthly Kaohsiung Metro station-ridership table.
-- Store one record per station and month: `stationId`, station name, ISO month, daily average inbound passengers, and the original PTT post URL.
-- Preserve only months whose original post was successfully parsed and validated. Missing months are omitted; no values are estimated or filled.
-- Use the source unit exactly as published: average daily inbound passengers. Do not multiply by the number of days in the month.
-- Remove annual views, annual comparisons, city-government data files, and all city-government source wording from the public app.
+- 僅收錄標題與內文可辨識為高雄捷運逐月各站旅運量表的文章。
+- 每筆資料為一個車站與月份，欄位包含：`stationId`、站名、ISO 月份、平均每日入站人次，以及 PTT 原文網址。
+- 僅保留可成功解析與驗證原文的月份；缺少的月份直接略過，不估算、不補值。
+- 完整保留原始單位「平均每日入站人次」，不乘以當月天數轉換為月總量。
+- 移除年度資料頁、年度比較、市府資料檔案，以及公開網站中所有市府來源描述。
 
-## Data ingestion
+## 資料匯入
 
-The importer will discover qualifying PTT MRT posts, parse the station ranking rows, and save normalized static JSON for GitHub Pages. It will reject records without a recognized station code, ISO month, numeric daily average, or source URL. The static metadata will state the PTT MRT board as the source and list the actual available months.
+匯入程式會尋找符合條件的 PTT MRT 板文章、解析各站排名列，並產生 GitHub Pages 使用的標準化靜態 JSON。沒有可辨識車站代碼、ISO 月份、數字格式日均值或原文網址的資料，一律拒絕匯入。靜態中繼資料會標示 PTT MRT 板為來源，並列出實際可用月份。
 
-Station codes and historic station names will be normalized so that renames, such as O1 and R24, remain queryable as the same station. Every displayed data point will link to its original post.
+車站代碼與歷史站名會標準化，使更名車站（例如 O1、R24）仍可視為同一站查詢。每一個畫面上的資料點都會連回原始文章。
 
-## Public interface
+## 公開網站介面
 
-The app will become a monthly-only explorer:
+網站將改為僅提供月資料的查詢工具：
 
-- Monthly ranking, labeled `平均每日入站人次`.
-- Single-station history using available months only.
-- Source link on each station/month record.
-- A plain disclosure that values are community-posted PTT data and may have month gaps.
+- 月度排行，單位明確標示為「平均每日入站人次」。
+- 單一車站歷史資料，只顯示可用月份。
+- 每個車站／月份資料提供原文連結。
+- 清楚說明資料來自 PTT 社群文章，可能有月份缺漏。
 
-## Validation and testing
+## 驗證與測試
 
-Tests will cover post discovery, ROC-to-ISO month conversion, representative ranking-row parsing, station-name normalization, and rejection of malformed rows. The build validation will require a source URL, valid ISO month, station code, and non-negative integer daily average for every record. The app build and all tests must pass before deployment.
+測試範圍包括：文章辨識、民國年月轉 ISO 月份、代表性排名列解析、站名標準化，以及格式錯誤資料的拒絕處理。建置驗證要求每筆資料都必須有來源網址、有效 ISO 月份、車站代碼與非負整數日均值。重新發布前，網站建置與所有測試都必須通過。
 
-## Non-goals
+## 非目標
 
-- No monthly-total conversion or estimation.
-- No use of city-government, KRTC, or other sources in the public data set.
-- No display of months with no successfully verified PTT post.
+- 不轉換或估算月總人次。
+- 公開資料集不使用市府、高雄捷運公司或其他來源。
+- 沒有成功驗證 PTT 原文的月份不會顯示。
