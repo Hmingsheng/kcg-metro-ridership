@@ -11,13 +11,19 @@ export function buildPttRecords(posts: PttPost[]): RidershipRecord[] {
 }
 
 export function extractPttPostUrls(indexHtml: string): string[] {
-  return [...indexHtml.matchAll(/href="(\/bbs\/MRT\/M\.[^"]+\.html)">([^<]+高雄捷運\d+年\d+月各站旅運量[^<]*)<\/a>/g)]
+  return [...indexHtml.matchAll(/href="(\/bbs\/MRT\/M\.[^"]+\.html)">([^<]+(?:高雄捷運\d+年\d+月|\d+年\d+月高雄捷運)各站旅運量[^<]*)<\/a>/g)]
     .map((match) => `https://www.ptt.cc${match[1]}`)
     .filter((url, index, urls) => urls.indexOf(url) === index);
 }
 
 const searchPages = 65;
-const additionalPostUrls = ['https://www.ptt.cc/bbs/MRT/M.1513354543.A.C9B.html'];
+const additionalPostUrls = [
+  'https://www.ptt.cc/bbs/MRT/M.1513354543.A.C9B.html',
+  'https://www.ptt.cc/bbs/MRT/M.1607397692.A.0B8.html',
+  'https://www.ptt.cc/bbs/MRT/M.1607397995.A.935.html',
+  'https://www.ptt.cc/bbs/MRT/M.1287577995.A.AC1.html',
+];
+const historicSearchTerms = ['高雄捷運97年', '高雄捷運98年', '高雄捷運99年', '高雄捷運109年', '高雄捷運110年'];
 const searchUrl = (page: number, query = '高雄捷運') => `https://www.ptt.cc/bbs/MRT/search?page=${page}&q=${encodeURIComponent(query)}`;
 
 function stripHtml(html: string) {
@@ -26,7 +32,7 @@ function stripHtml(html: string) {
 
 export function extractPttPost(html: string, url: string): PttPost | undefined {
   const title = html.match(/<meta property="og:title" content="([^"]+)"/i)?.[1];
-  const mainContent = html.match(/<div id="main-content"[^>]*>([\s\S]*?)<div class="push/i)?.[1];
+  const mainContent = html.match(/<div id="main-content"[^>]*>([\s\S]*?)(?:<div class="push|<div id="article-polling")/i)?.[1];
   const body = mainContent?.replace(/^(?:<div class="article-metaline(?:-right)?">[\s\S]*?<\/div>){4}/, '');
   return title && body ? { url, title, body: stripHtml(body) } : undefined;
 }
@@ -36,9 +42,11 @@ export async function fetchPttDailyRidershipPosts(): Promise<PttPost[]> {
   const searches = [
     ...Array.from({ length: searchPages }, (_, index) => searchUrl(index + 1)),
     ...Array.from({ length: 2 }, (_, index) => searchUrl(index + 1, '高雄捷運107年')),
+    ...historicSearchTerms.flatMap((term) => Array.from({ length: 4 }, (_, index) => searchUrl(index + 1, term))),
   ];
   for (const url of searches) {
     const response = await fetch(url);
+    if (response.status === 404) continue;
     if (!response.ok) throw new Error(`PTT search request failed: HTTP ${response.status}`);
     indexPages.push(await response.text());
   }

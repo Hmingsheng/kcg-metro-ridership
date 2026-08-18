@@ -99,6 +99,11 @@ describe('PTT daily-ridership parser', () => {
     ]);
   });
 
+  it('discovers historic posts whose title begins with the year and month', () => {
+    const index = '<div class="title"><a href="/bbs/MRT/M.legacy.html">[情報] 106年11月高雄捷運各站旅運量</a></div>';
+    expect(extractPttPostUrls(index)).toEqual(['https://www.ptt.cc/bbs/MRT/M.legacy.html']);
+  });
+
   it('extracts the post body after PTT metadata blocks', () => {
     const html = `<meta property="og:title" content="[情報] 高雄捷運113年12月各站旅運量">
       <div id="main-content"><div class="article-metaline">作者</div><div class="article-metaline-right">MRT</div><div class="article-metaline">標題</div><div class="article-metaline">時間</div>

@@ -26,14 +26,14 @@ const historicStationCodes: Record<string, [string, string]> = {
 };
 
 export function parsePttDailyRidershipPost(post: PttPost): RidershipRecord[] {
-  const title = post.title.match(/(?:高雄捷運(\d+)年(\d+)月|(\d+)年(\d+)月高雄捷運)各站旅運量/);
+  const title = post.title.match(/(?:高雄捷運(\d+)年(\d+)月|(\d+)年(\d+)月高雄捷運)各站(?:旅)?運量/);
   if (!title) return [];
 
   const period = `${Number(title[1] ?? title[3]) + 1911}-${(title[2] ?? title[4]).padStart(2, '0')}`;
   return post.body.split(/\r?\n/).flatMap((line) => {
-    const row = line.match(/\b([A-Z]+\d+[A-Z]?(?:\/[A-Z]+\d+[A-Z]?)?)\s+(.+?)\s+([\d,]+)/);
+    const row = line.match(/\b([A-Z]+\d+(?:[A-Z]+\d+)?(?:\/[A-Z]+\d+[A-Z]?)?)\s+(.+?)\s+([\d,]+)/);
     if (row && /[^\d,]/.test(row[2])) return [{
-      stationId: row[1],
+      stationId: row[1] === 'O5R10' ? 'O5/R10' : row[1],
       stationName: stationNameAliases[row[2]] ?? row[2],
       period,
       passengers: Number(row[3].replaceAll(',', '')),
