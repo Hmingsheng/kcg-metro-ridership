@@ -11,7 +11,7 @@ export function buildPttRecords(posts: PttPost[]): RidershipRecord[] {
 }
 
 export function extractPttPostUrls(indexHtml: string): string[] {
-  return [...indexHtml.matchAll(/href="(\/bbs\/MRT\/M\.[^"]+\.html)">([^<]+(?:高雄捷運\d+年\d+月|\d+年\d+月高雄捷運)各站旅運量[^<]*)<\/a>/g)]
+  return [...indexHtml.matchAll(/href="(\/bbs\/MRT\/M\.[^"]+\.html)">([^<]+(?:高雄捷運\d+年\d+月|\d+年\d+月高雄捷運)(?:各站旅運量|運量)[^<]*)<\/a>/g)]
     .map((match) => `https://www.ptt.cc${match[1]}`)
     .filter((url, index, urls) => urls.indexOf(url) === index);
 }

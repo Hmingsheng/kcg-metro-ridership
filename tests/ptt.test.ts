@@ -28,6 +28,27 @@ describe('PTT daily-ridership parser', () => {
     })[0]).toMatchObject({ stationId: 'R11', stationName: '高雄車站', passengers: 31580 });
   });
 
+  it('parses a current post that abbreviates the title to 運量', () => {
+    expect(parsePttDailyRidershipPost({
+      url: 'https://www.ptt.cc/bbs/MRT/M.example.html',
+      title: '高雄捷運115年10月運量',
+      body: ' -    1    R16    左營               42,000  40,000  38,000',
+    })[0]).toMatchObject({ stationId: 'R16', stationName: '左營', period: '2026-10', passengers: 42000 });
+  });
+
+  it('parses station codes with a trailing letter', () => {
+    const records = parsePttDailyRidershipPost({
+      url: 'https://www.ptt.cc/bbs/MRT/M.example.html',
+      title: '高雄捷運115年10月各站旅運量',
+      body: ' -   12    R4A    草衙               11,255\n -   38    R22A   橋頭糖廠            2,303',
+    });
+
+    expect(records).toMatchObject([
+      { stationId: 'R4A', stationName: '草衙', passengers: 11255 },
+      { stationId: 'R22A', stationName: '橋頭糖廠', passengers: 2303 },
+    ]);
+  });
+
   it('normalizes historic station names and rejects non-ridership posts', () => {
     expect(parsePttDailyRidershipPost({
       url: 'https://www.ptt.cc/bbs/MRT/M.example.html',
@@ -102,6 +123,11 @@ describe('PTT daily-ridership parser', () => {
   it('discovers historic posts whose title begins with the year and month', () => {
     const index = '<div class="title"><a href="/bbs/MRT/M.legacy.html">[情報] 106年11月高雄捷運各站旅運量</a></div>';
     expect(extractPttPostUrls(index)).toEqual(['https://www.ptt.cc/bbs/MRT/M.legacy.html']);
+  });
+
+  it('discovers current posts whose title abbreviates 各站旅運量 to 運量', () => {
+    const index = '<div class="title"><a href="/bbs/MRT/M.current.html">[情報] 高雄捷運115年10月運量</a></div>';
+    expect(extractPttPostUrls(index)).toEqual(['https://www.ptt.cc/bbs/MRT/M.current.html']);
   });
 
   it('extracts the post body after PTT metadata blocks', () => {
